@@ -79,7 +79,7 @@ val_loader = DataLoader(TensorDataset(X_val, Y_val), batch_size=128)
 
 # Training loop
 train_losses, val_losses = [], []
-for epoch in range(1000):
+for epoch in range(2000):
     model.train()
     epoch_loss = 0
     for x_batch, y_batch in train_loader:
