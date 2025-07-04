@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Set input/output dimensions
 m = 7  # input size
 p = 4  # output size
-h = 20  # hidden dimension (number of REN units)
+h = 8  # hidden dimension (number of REN units)
 
 # Load training data
 dataset_csv = pd.read_csv('dataset_xid_train_shuffle.csv', sep=',')
@@ -30,7 +30,7 @@ class ExplicitREN(nn.Module):
         self.Bs_full = nn.Parameter(torch.empty(hidden_dim, hidden_dim))  # Bs: strictly lower triangular recurrence
         self.Ds = nn.Linear(hidden_dim, output_dim, bias=False)    # Ds: state-to-output
         self.D = nn.Linear(input_dim, output_dim, bias=False)      # D: direct input-to-output
-        self.activation = torch.tanh
+        self.activation = torch.relu
 
         # Initialize and apply strict lower triangular mask to Bs
         nn.init.xavier_uniform_(self.Bs_full)
@@ -71,7 +71,7 @@ class ExplicitREN(nn.Module):
 # Instantiate model and training components
 model = ExplicitREN(m, h, p)
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
 # Dataloaders
 train_loader = DataLoader(TensorDataset(X_train, Y_train), batch_size=128, shuffle=True)
@@ -118,8 +118,8 @@ with torch.no_grad():
 plt.figure(figsize=(10, 8))
 for i in range(p):
     plt.subplot(p, 1, i + 1)
-    plt.plot(Y_true_val[1:300, i], label='True')
-    plt.plot(Y_pred_val[1:300, i], '--', label='REN Prediction')
+    plt.plot(Y_true_val[200:600, i], label='True')
+    plt.plot(Y_pred_val[200:600, i], '--', label='REN Prediction')
     plt.ylabel(f'Output {i + 1}')
     if i == 0:
         plt.title("REN Fit on Validation Set")
